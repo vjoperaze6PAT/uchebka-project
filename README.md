@@ -1,2 +1,570 @@
+# uchebka-project[uchebkaEZEZ.html](https://github.com/user-attachments/files/35484598/uchebkaEZEZ.html)
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Учебка — твой универ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-# uchebka-project
+  :root {
+    --bg: #f9f9f9;
+    --surface: #ffffff;
+    --surface-hover: #f0f0f0;
+    --border: #e0e0e0;
+    --text: #111111;
+    --text-muted: #666666;
+    --accent: #000000;
+    --accent-soft: #f3f3f3;
+    --red: #d92d20;
+    --green: #039855;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg); 
+    color: var(--text); 
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+  }
+  
+  button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+  button { cursor: pointer; border: none; background: none; }
+  
+  input, select, textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 4px; background: var(--surface); outline: none; transition: 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--text); }
+
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 220px; background: var(--surface); border-right: 1px solid var(--border);
+    padding: 20px 12px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px;
+  }
+  .logo { font-size: 18px; font-weight: 700; padding: 0 10px 20px; letter-spacing: -0.5px; color: var(--text); }
+  .logo span { color: var(--text-muted); }
+  
+  .nav-btn {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    border-radius: 4px; color: var(--text-muted); font-weight: 500;
+    text-align: left; width: 100%; transition: 0.15s; font-size: 14px;
+  }
+  .nav-btn:hover { background: var(--surface-hover); color: var(--text); }
+  .nav-btn.active { background: var(--accent-soft); color: var(--text); font-weight: 600; }
+
+  .main { flex: 1; padding: 32px; max-width: 960px; margin: 0 auto; width: 100%; }
+  .page-title { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+  .page-sub { color: var(--text-muted); margin: 4px 0 24px; font-size: 14px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; margin-bottom: 20px;
+  }
+  .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 14px; color: var(--text); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  
+  @media (max-width: 860px) {
+    .app { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid var(--border); }
+    .logo { display: none; }
+    .nav-btn { white-space: nowrap; width: auto; padding: 8px 12px; }
+    .main { padding: 20px 16px; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 4px; font-weight: 500; transition: 0.15s; font-size: 14px; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: 0.8; }
+  .btn-ghost { border: 1px solid var(--border); background: var(--surface); }
+  .btn-ghost:hover { background: var(--surface-hover); border-color: #ccc; }
+  .btn-danger { background: #fef3f2; color: var(--red); }
+  .btn-danger:hover { background: #fee4e2; }
+
+  .empty { text-align: center; color: var(--text-muted); padding: 32px 0; font-size: 14px; }
+
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px;
+  }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px;
+    width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  .modal h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+  .day-group {
+    background: var(--surface); border-radius: 8px; border: 1px solid var(--border);
+    margin-bottom: 20px; overflow: hidden; position: relative;
+  }
+  .day-group::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #d1d1d1; }
+  .day-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fafafa;
+  }
+  .day-title { font-size: 16px; font-weight: 600; color: var(--text); }
+  .day-count { font-size: 13px; color: var(--text-muted); font-weight: 400; }
+  
+  .pair-item { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 16px; }
+  .pair-item:last-child { border-bottom: none; }
+  .pair-item:hover { background: #fafafa; }
+  
+  .pair-time { width: 60px; flex-shrink: 0; display: flex; flex-direction: column; }
+  .pair-time b { font-size: 15px; font-weight: 600; color: var(--text); }
+  .pair-time span { font-size: 13px; color: var(--text-muted); }
+  .pair-num { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+
+  .pair-info { flex: 1; }
+  .pair-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .pair-meta { font-size: 13px; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap; }
+  .pair-meta span { display: flex; align-items: center; gap: 4px; }
+  
+  .pair-actions { opacity: 0; transition: 0.15s; }
+  .pair-item:hover .pair-actions { opacity: 1; }
+  .pair-actions button { color: var(--red); font-size: 16px; padding: 4px; }
+
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .mb { margin-bottom: 20px; }
+  
+  .list-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px;
+    background: var(--surface);
+  }
+  .list-item .grow { flex: 1; }
+  .muted { color: var(--text-muted); font-size: 13px; }
+  
+  .chip { display: inline-block; padding: 6px 12px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.15s; }
+  .chip:hover { background: var(--surface-hover); }
+  .chip.active { background: var(--text); color: #fff; border-color: var(--text); }
+  
+  .timer-big { font-size: 80px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: -2px; margin: 20px 0; color: var(--text); }
+  .flash-big { text-align: center; padding: 32px 20px; }
+  .flash-q { font-size: 22px; font-weight: 600; margin-bottom: 20px; color: var(--text); }
+  .flash-a { background: #f0fdf4; color: var(--green); padding: 16px; border-radius: 4px; margin-bottom: 20px; font-size: 16px; border: 1px solid #bbf7d0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+/* ========== ДАННЫЕ ========== */
+const KEY = "uchebka:v4"; // Поднял версию для обновления данных
+const uid = () => Math.random().toString(36).slice(2, 10);
+const today = () => new Date().toISOString().slice(0, 10);
+const DAYS = ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"];
+
+const seed = () => ({
+  subjects: [
+    { id: "s1", name: "Основы алгоритмизации и программирования", teacher: "Трухачев Д.Д." },
+    { id: "s2", name: "Управление проектами", teacher: "Судорьев Н.С." },
+    { id: "s3", name: "Моделирование и анализ ПО", teacher: "Трухачев Д.Д." },
+  ],
+  schedule: [
+    { id: uid(), subjectId: "s1", day: 5, num: 1, start: "09:00", end: "10:30", room: "352", type: "Практика" },
+    { id: uid(), subjectId: "s1", day: 5, num: 2, start: "10:40", end: "12:10", room: "367", type: "Практика" },
+    { id: uid(), subjectId: "s1", day: 5, num: 3, start: "12:30", end: "14:00", room: "459", type: "Практика" },
+    { id: uid(), subjectId: "s2", day: 5, num: 4, start: "14:20", end: "15:50", room: "459", type: "Практика" },
+    { id: uid(), subjectId: "s3", day: 6, num: 1, start: "09:00", end: "10:30", room: "367", type: "ЗАЧЕТ" },
+    { id: uid(), subjectId: "s3", day: 6, num: 2, start: "10:40", end: "12:10", room: "367", type: "ЗАЧЕТ" },
+    { id: uid(), subjectId: "s1", day: 6, num: 3, start: "12:30", end: "14:00", room: "367", type: "ЗАЧЕТ" },
+  ],
+  deadlines: [
+    { id: uid(), subjectId: "s1", title: "Сдать лабораторную №3 (Сортировки)", date: plusDays(2), done: false },
+    { id: uid(), subjectId: "s2", title: "Защита курсовой работы", date: plusDays(5), done: false },
+    { id: uid(), subjectId: "s3", title: "Подготовить отчет по практике", date: plusDays(-1), done: false },
+  ],
+  notes: [
+    { 
+      id: uid(), 
+      subjectId: "s1", 
+      title: "Шпаргалка по сортировкам", 
+      body: "1. Пузырьком (Bubble Sort) — O(n^2). Медленная, но простая.\n2. Быстрая (Quick Sort) — O(n log n) в среднем, O(n^2) в худшем.\n3. Слиянием (Merge Sort) — всегда O(n log n), требует доп память.\n\nСложность поиска в бинарном дереве — O(log n)." 
+    },
+    { 
+      id: uid(), 
+      subjectId: "s2", 
+      title: "Методология Agile", 
+      body: "Agile — гибкая методология. Главное: люди и взаимодействие важнее процессов и инструментов.\n\nScrum:\n- Спринты (обычно 2 недели)\n- Ежедневные стендапы (Daily Scrum)\n- Роли: Product Owner, Scrum Master, Команда." 
+    }
+  ],
+  cards: [
+    // Основы алгоритмизации
+    { id: uid(), subjectId: "s1", q: "Что такое массив?", a: "Структура данных, хранящая элементы одного типа подряд в памяти." },
+    { id: uid(), subjectId: "s1", q: "Сложность бинарного поиска?", a: "O(log n)" },
+    { id: uid(), subjectId: "s1", q: "Как работает стек?", a: "LIFO (Last In, First Out) — последним пришел, первым вышел." },
+    { id: uid(), subjectId: "s1", q: "Что такое рекурсия?", a: "Вызов функцией самой себя до достижения базового случая." },
+    { id: uid(), subjectId: "s1", q: "Сложность доступа к элементу массива по индексу?", a: "O(1) — константное время." },
+    { id: uid(), subjectId: "s1", q: "Чем отличается связный список от массива?", a: "Список хранит элементы вразброс (через указатели), массив — подряд. Список быстрее на вставку/удаление, массив — на чтение." },
+    { id: uid(), subjectId: "s1", q: "Что такое хэш-таблица?", a: "Структура данных, где ключ преобразуется хэш-функцией в индекс массива (в среднем O(1) на поиск)." },
+    
+    // Управление проектами
+    { id: uid(), subjectId: "s2", q: "Что такое MVP?", a: "Minimum Viable Product — минимально жизнеспособный продукт." },
+    { id: uid(), subjectId: "s2", q: "Три главных ограничения проекта (Треугольник)?", a: "Время, Бюджет, Содержание (Scope)." },
+    { id: uid(), subjectId: "s2", q: "Кто такой Scrum Master?", a: "Фасилитатор, который следит за процессом и убирает препятствия, но не управляет командой напрямую." },
+    { id: uid(), subjectId: "s2", q: "Что такое бэклог?", a: "Список задач, которые нужно выполнить в проекте (Product Backlog) или спринте (Sprint Backlog)." },
+    { id: uid(), subjectId: "s2", q: "Что такое спринт?", a: "Фиксированный промежуток времени (обычно 2-4 недели), за который команда делает инкремент продукта." },
+    
+    // Моделирование
+    { id: uid(), subjectId: "s3", q: "Что такое UML?", a: "Unified Modeling Language — унифицированный язык моделирования для визуализации ПО." },
+    { id: uid(), subjectId: "s3", q: "Для чего нужна диаграмма классов?", a: "Чтобы показать структуру системы: классы, их атрибуты, методы и связи между ними." },
+    { id: uid(), subjectId: "s3", q: "Что такое инкапсуляция?", a: "Скрытие внутренней реализации объекта и предоставление доступа только через публичные методы." },
+    { id: uid(), subjectId: "s3", q: "Что такое агрегация в UML?", a: "Отношение 'часть-целое', где часть может существовать отдельно от целого (пустой ромб)." }
+  ],
+  sessions: [],
+});
+
+function plusDays(n) { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+
+let state = load();
+function load() {
+  try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : seed(); } catch { return seed(); }
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function subj(id) { return state.subjects.find(s => s.id === id); }
+
+/* ========== РОУТЕР ========== */
+const routes = {
+  today: { icon: "🏠", label: "Сегодня", render: renderToday },
+  schedule: { icon: "🗓️", label: "Расписание", render: renderSchedule },
+  deadlines: { icon: "⏰", label: "Дедлайны", render: renderDeadlines },
+  notes: { icon: "📝", label: "Конспекты", render: renderNotes },
+  cards: { icon: "🃏", label: "Карточки", render: renderCards },
+  timer: { icon: "🍅", label: "Таймер", render: renderTimer },
+};
+let current = "schedule";
+
+function renderNav() {
+  document.getElementById("sidebar").innerHTML =
+    `<div class="logo">Учебка<span>.</span></div>` +
+    Object.entries(routes).map(([key, r]) =>
+      `<button class="nav-btn ${key === current ? "active" : ""}" onclick="go('${key}')">
+        <span>${r.icon}</span> ${r.label}
+      </button>`
+    ).join("");
+}
+function go(key) { current = key; renderNav(); render(); }
+function render() {
+  document.getElementById("main").innerHTML = routes[current].render();
+  if (current === "timer") timerTick();
+}
+
+/* ========== СЕГОДНЯ ========== */
+function renderToday() {
+  const day = new Date().getDay() || 7;
+  const todayPairs = state.schedule.filter(s => s.day === day).sort((a,b) => a.num - b.num);
+  const upcoming = state.deadlines.filter(d => !d.done).sort((a,b) => a.date.localeCompare(b.date)).slice(0, 3);
+  
+  return `
+    <h1 class="page-title">Сегодня</h1>
+    <p class="page-sub">${new Date().toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}</p>
+    <div class="grid-2">
+      <div>
+        ${todayPairs.length ? renderDayGroup(day, todayPairs, false) : `<div class="card"><div class="empty">Сегодня пар нет — отдыхай.</div></div>`}
+      </div>
+      <div class="card">
+        <h2>Ближайшие дедлайны</h2>
+        ${upcoming.length ? upcoming.map(d => {
+          const s = subj(d.subjectId);
+          return `<div class="list-item"><div class="grow"><b>${d.title}</b><div class="muted">${s?.name} · ${d.date}</div></div></div>`;
+        }).join("") : `<div class="empty">Дедлайнов нет.</div>`}
+      </div>
+    </div>
+  `;
+}
+
+/* ========== РАСПИСАНИЕ ========== */
+function renderSchedule() {
+  const daysWithPairs = [1,2,3,4,5,6,7].filter(day => state.schedule.some(s => s.day === day));
+  return `
+    <div class="row" style="justify-content:space-between; margin-bottom: 24px;">
+      <div>
+        <h1 class="page-title">Расписание</h1>
+        <p class="page-sub" style="margin:0;">Твоя неделя в универе</p>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost" onclick="openSubjectModal()">+ Предмет</button>
+        <button class="btn btn-primary" onclick="openPairModal()">+ Пара</button>
+      </div>
+    </div>
+    ${daysWithPairs.length ? daysWithPairs.map(day => {
+      const pairs = state.schedule.filter(s => s.day === day).sort((a,b) => a.num - b.num);
+      return renderDayGroup(day, pairs, true);
+    }).join("") : `<div class="card"><div class="empty">Расписание пустое. Добавь первый предмет и пару!</div></div>`}
+  `;
+}
+
+function renderDayGroup(day, pairs, editable) {
+  const endTime = pairs[pairs.length - 1]?.end || "";
+  return `
+    <div class="day-group">
+      <div class="day-header">
+        <div>
+          <div class="day-title">${editable ? DAYS[day-1] : DAYS[day-1] + ", " + new Date().toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}</div>
+          <div class="day-count">${pairs.length} пар${pairs.length > 1 ? "ы" : "а"} ${endTime ? `· до ${endTime}` : ""}</div>
+        </div>
+      </div>
+      <div>
+        ${pairs.map(p => {
+          const s = subj(p.subjectId) || { name: "Неизвестный предмет", teacher: "—" };
+          return `
+            <div class="pair-item">
+              <div class="pair-time">
+                <div class="pair-num">${p.num} пара</div>
+                <b>${p.start}</b>
+                <span>${p.end}</span>
+              </div>
+              <div class="pair-info">
+                <div class="pair-name">${s.name} ${p.type === "ЗАЧЕТ" ? "ЗАЧЕТ" : ""}</div>
+                <div class="pair-meta">
+                  <span>каб. ${p.room}</span>
+                  <span>${s.teacher}</span>
+                  <span>${p.type}</span>
+                </div>
+              </div>
+              ${editable ? `<div class="pair-actions"><button onclick="delPair('${p.id}')">✕</button></div>` : ""}
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function delPair(id) { state.schedule = state.schedule.filter(s => s.id !== id); save(); render(); }
+
+function openSubjectModal() {
+  showModal(`<h3>Новый предмет</h3>
+    <input id="m-name" placeholder="Название (напр. Высшая математика)">
+    <input id="m-teacher" placeholder="Преподаватель (напр. Иванов И.И.)">
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Отмена</button>
+    <button class="btn btn-primary" onclick="saveSubject()">Добавить</button></div>`);
+}
+function saveSubject() {
+  const name = document.getElementById("m-name").value.trim();
+  const teacher = document.getElementById("m-teacher").value.trim();
+  if (!name) return alert("Введи название");
+  state.subjects.push({ id: uid(), name, teacher });
+  save(); closeModal(); render();
+}
+
+function openPairModal() {
+  if (!state.subjects.length) return alert("Сначала добавь хотя бы один предмет!");
+  showModal(`<h3>Новая пара</h3>
+    <select id="m-subj">${state.subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join("")}</select>
+    <select id="m-day">${DAYS.map((d,i) => `<option value="${i+1}">${d}</option>`).join("")}</select>
+    <div class="row">
+      <input id="m-num" type="number" placeholder="№ пары" value="1" style="flex:1">
+      <input id="m-room" placeholder="Каб." style="flex:1">
+    </div>
+    <div class="row">
+      <input type="time" id="m-start" value="09:00" style="flex:1">
+      <input type="time" id="m-end" value="10:30" style="flex:1">
+    </div>
+    <select id="m-type">
+      <option value="Лекция">Лекция</option>
+      <option value="Практика" selected>Практика</option>
+      <option value="Лаба">Лабораторная</option>
+      <option value="ЗАЧЕТ">Зачёт</option>
+    </select>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Отмена</button>
+    <button class="btn btn-primary" onclick="savePair()">Добавить</button></div>`);
+}
+function savePair() {
+  state.schedule.push({
+    id: uid(), subjectId: document.getElementById("m-subj").value,
+    day: +document.getElementById("m-day").value,
+    num: +document.getElementById("m-num").value,
+    start: document.getElementById("m-start").value,
+    end: document.getElementById("m-end").value,
+    room: document.getElementById("m-room").value.trim(),
+    type: document.getElementById("m-type").value,
+  });
+  save(); closeModal(); render();
+}
+
+/* ========== ДЕДЛАЙНЫ ========== */
+function renderDeadlines() {
+  const sorted = [...state.deadlines].sort((a,b) => a.date.localeCompare(b.date));
+  return `
+    <div class="row" style="justify-content:space-between; margin-bottom: 24px;">
+      <div><h1 class="page-title">Дедлайны</h1><p class="page-sub" style="margin:0;">Что и когда сдать</p></div>
+      <button class="btn btn-primary" onclick="openDeadlineModal()">+ Добавить</button>
+    </div>
+    ${sorted.length ? sorted.map(d => {
+      const s = subj(d.subjectId);
+      const left = Math.ceil((new Date(d.date) - new Date(today())) / 86400000);
+      return `<div class="list-item ${d.done ? "muted" : ""}">
+        <input type="checkbox" style="width:18px;height:18px;accent-color:var(--text)" ${d.done ? "checked" : ""} onchange="toggleDeadline('${d.id}')">
+        <div class="grow"><b style="${d.done ? "text-decoration:line-through" : ""}">${d.title}</b>
+        <div class="muted">${s?.name} · ${d.date} · ${left >= 0 ? left + " дн." : "просрочено"}</div></div>
+        <button onclick="delDeadline('${d.id}')" style="color:var(--text-muted);font-size:16px">✕</button>
+      </div>`;
+    }).join("") : `<div class="card"><div class="empty">Дедлайнов нет — и это хорошо.</div></div>`}
+  `;
+}
+function toggleDeadline(id) { const d = state.deadlines.find(x => x.id === id); d.done = !d.done; save(); render(); }
+function delDeadline(id) { state.deadlines = state.deadlines.filter(d => d.id !== id); save(); render(); }
+function openDeadlineModal() {
+  showModal(`<h3>Новый дедлайн</h3>
+    <input id="m-title" placeholder="Что сдать">
+    <select id="m-subj">${state.subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join("")}</select>
+    <input type="date" id="m-date">
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Отмена</button>
+    <button class="btn btn-primary" onclick="saveDeadline()">Добавить</button></div>`);
+}
+function saveDeadline() {
+  const title = document.getElementById("m-title").value.trim();
+  const date = document.getElementById("m-date").value;
+  if (!title || !date) return alert("Заполни название и дату");
+  state.deadlines.push({ id: uid(), subjectId: document.getElementById("m-subj").value, title, date, done: false });
+  save(); closeModal(); render();
+}
+
+/* ========== КОНСПЕКТЫ ========== */
+let activeSubject = null; let activeNote = null;
+function renderNotes() {
+  if (!activeSubject) activeSubject = state.subjects[0]?.id;
+  const notes = state.notes.filter(n => n.subjectId === activeSubject);
+  if (activeNote && !state.notes.find(n => n.id === activeNote)) activeNote = null;
+  const note = state.notes.find(n => n.id === activeNote);
+  return `
+    <h1 class="page-title">Конспекты</h1>
+    <p class="page-sub">Заметки по предметам</p>
+    <div style="display:grid; grid-template-columns: 200px 1fr; gap: 20px;">
+      <div class="card" style="padding: 12px;">
+        ${state.subjects.map(s => `<button class="nav-btn ${s.id === activeSubject ? "active" : ""}" onclick="pickSubject('${s.id}')">${s.name}</button>`).join("")}
+      </div>
+      <div class="card">
+        <div class="row mb"><button class="btn btn-primary" onclick="newNote()">+ Заметка</button></div>
+        ${notes.length ? notes.map(n => `<button class="nav-btn ${n.id === activeNote ? "active" : ""}" onclick="pickNote('${n.id}')">${n.title || "Без названия"}</button>`).join("") : `<div class="empty">Заметок нет.</div>`}
+        ${note ? `
+          <hr style="margin:20px 0;border:none;border-top:1px solid var(--border)">
+          <input value="${escapeAttr(note.title)}" oninput="renameNote('${note.id}', this.value)" style="font-size:16px;font-weight:600;margin-bottom:12px;background:transparent;border:none;padding:0">
+          <textarea oninput="editNote('${note.id}', this.value)" style="height:300px;font-family:monospace;font-size:13px;line-height:1.6" placeholder="Текст конспекта...">${escapeHtml(note.body)}</textarea>
+          <button class="btn btn-danger" onclick="delNote('${note.id}')" style="margin-top:12px">Удалить</button>
+        ` : ""}
+      </div>
+    </div>
+  `;
+}
+function pickSubject(id) { activeSubject = id; activeNote = null; render(); }
+function pickNote(id) { activeNote = id; render(); }
+function newNote() { const n = { id: uid(), subjectId: activeSubject, title: "Новая заметка", body: "" }; state.notes.push(n); activeNote = n.id; save(); render(); }
+function renameNote(id, v) { const n = state.notes.find(n => n.id === id); n.title = v; save(); }
+function editNote(id, v) { const n = state.notes.find(n => n.id === id); n.body = v; save(); }
+function delNote(id) { state.notes = state.notes.filter(n => n.id !== id); activeNote = null; save(); render(); }
+
+/* ========== КАРТОЧКИ ========== */
+let cardSubject = null, cardMode = false, cardIdx = 0, cardShow = false, cardKnown = 0;
+function renderCards() {
+  if (!cardSubject) cardSubject = state.subjects[0]?.id;
+  const cards = state.cards.filter(c => c.subjectId === cardSubject);
+  if (cardMode && cards[cardIdx]) {
+    const c = cards[cardIdx];
+    return `<h1 class="page-title">Карточки</h1><p class="page-sub">Повторение</p>
+      <div class="card flash-big">
+        <div class="muted mb">${cardIdx + 1} / ${cards.length}</div>
+        <div class="flash-q">${escapeHtml(c.q)}</div>
+        ${cardShow ? `<div class="flash-a">${escapeHtml(c.a)}</div>
+          <div class="row" style="justify-content:center">
+            <button class="btn btn-ghost" onclick="answerCard(false)">Не знал</button>
+            <button class="btn btn-primary" style="background:var(--green)" onclick="answerCard(true)">Знал</button>
+          </div>` : `<button class="btn btn-primary" onclick="cardShow=true;render()">Показать ответ</button>`}
+      </div>`;
+  }
+  return `<h1 class="page-title">Карточки</h1><p class="page-sub">Повторяй — и запоминай</p>
+    <div class="row mb">${state.subjects.map(s => `<button class="chip ${s.id===cardSubject?"active":""}" onclick="cardSubject='${s.id}';render()">${s.name}</button>`).join("")}</div>
+    <div class="card mb">
+      <h2>Новая карточка</h2>
+      <input id="c-q" placeholder="Вопрос" style="margin-bottom:10px">
+      <input id="c-a" placeholder="Ответ" style="margin-bottom:10px">
+      <button class="btn btn-primary" onclick="addCard()">Добавить</button>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <h2>Все карточки (${cards.length})</h2>
+        <button class="btn btn-primary" style="background:var(--green)" ${cards.length?"":"disabled"} onclick="startCards()">Начать</button>
+      </div>
+      ${cards.length ? cards.map(c => `<div class="list-item"><div class="grow"><b>${escapeHtml(c.q)}</b><div class="muted">${escapeHtml(c.a)}</div></div>
+        <button onclick="delCard('${c.id}')" style="color:var(--text-muted);font-size:16px">✕</button></div>`).join("") : `<div class="empty">Карточек нет.</div>`}
+    </div>`;
+}
+function addCard() { const q = document.getElementById("c-q").value.trim(); const a = document.getElementById("c-a").value.trim(); if (!q || !a) return; state.cards.push({ id: uid(), subjectId: cardSubject, q, a }); save(); render(); }
+function delCard(id) { state.cards = state.cards.filter(c => c.id !== id); save(); render(); }
+function startCards() { cardMode = true; cardIdx = 0; cardShow = false; cardKnown = 0; render(); }
+function answerCard(known) {
+  if (known) cardKnown++;
+  const cards = state.cards.filter(c => c.subjectId === cardSubject);
+  if (cardIdx + 1 >= cards.length) { cardMode = false; alert(`Готово! Знал ${cardKnown} из ${cards.length}`); render(); return; }
+  cardIdx++; cardShow = false; render();
+}
+
+/* ========== ТАЙМЕР ========== */
+const WORK = 25 * 60; let timeLeft = WORK, running = false, tickHandle = null, timerSubject = null;
+function renderTimer() {
+  if (!timerSubject) timerSubject = state.subjects[0]?.id;
+  return `<h1 class="page-title">Таймер</h1><p class="page-sub">25 минут фокуса — и перерыв</p>
+    <div class="card" style="text-align:center; padding: 32px;">
+      <select onchange="timerSubject=this.value" style="max-width:280px;margin:0 auto;">
+        ${state.subjects.map(s => `<option value="${s.id}" ${s.id===timerSubject?"selected":""}>${s.name}</option>`).join("")}
+      </select>
+      <div class="timer-big" id="timer-display">${fmtTime(timeLeft)}</div>
+      <div class="row" style="justify-content:center">
+        ${running ? `<button class="btn btn-ghost" onclick="stopTimer()">Пауза</button>` : `<button class="btn btn-primary" onclick="startTimer()">Старт</button>`}
+        <button class="btn btn-ghost" onclick="resetTimer()">Сброс</button>
+      </div>
+      <p class="muted" style="margin-top:16px">Сессий сегодня: ${state.sessions.filter(s => s.date === today()).length}</p>
+    </div>`;
+}
+function fmtTime(s) { return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); }
+function startTimer() {
+  if (running) return;
+  running = true;
+  tickHandle = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      stopTimer();
+      state.sessions.push({ id: uid(), subjectId: timerSubject, date: today(), duration: 25 });
+      save();
+      alert("Сессия завершена! Отдохни 5 минут.");
+      timeLeft = WORK;
+      render();
+      return;
+    }
+    timerTick();
+  }, 1000);
+  render();
+}
+function stopTimer() { running = false; clearInterval(tickHandle); render(); }
+function resetTimer() { stopTimer(); timeLeft = WORK; render(); }
+function timerTick() { const el = document.getElementById("timer-display"); if (el) el.textContent = fmtTime(timeLeft); }
+
+/* ========== МОДАЛКИ И УТИЛИТЫ ========== */
+function showModal(html) {
+  closeModal();
+  const bg = document.createElement("div");
+  bg.className = "modal-bg"; bg.id = "modal-bg";
+  bg.innerHTML = `<div class="modal">${html}</div>`;
+  bg.addEventListener("click", e => { if (e.target === bg) closeModal(); });
+  document.body.appendChild(bg);
+}
+function closeModal() { const m = document.getElementById("modal-bg"); if (m) m.remove(); }
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(s) { return escapeHtml(s); }
+
+/* ========== СТАРТ ========== */
+renderNav();
+render();
+</script>
+</body>
+</html>
