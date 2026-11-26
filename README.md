@@ -29,4 +29,5 @@
 Проект задеплоен и доступен по ссылке: **[ВСТАВЬ СЮДА СВОЮ ССЫЛКУ С GITHUB PAGES]**
 
 ## 📸 Скриншоты
-*(Сюда вставь 1-2 скрина: главный экран с расписанием и экран карточек)*
+<img width="1912" height="914" alt="image" src="https://github.com/user-attachments/assets/80729f65-e481-4131-91eb-62eacc7abb18" />
+<img width="1912" height="914" alt="image" src="https://github.com/user-attachments/assets/326726e4-fe02-4c64-b462-759c40258a0e" />
