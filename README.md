@@ -26,7 +26,7 @@
 *(Опционально: запустить через Live Server в VS Code).*
 
 ## 🌐 Демо
-Проект задеплоен и доступен по ссылке: **[ВСТАВЬ СЮДА СВОЮ ССЫЛКУ С GITHUB PAGES]**
+Проект задеплоен и доступен по ссылке: https://vjoperaze6pat.github.io/uchebka-project/
 
 ## 📸 Скриншоты
 <img width="1912" height="914" alt="image" src="https://github.com/user-attachments/assets/80729f65-e481-4131-91eb-62eacc7abb18" />
